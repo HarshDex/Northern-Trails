@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+:root {
+  /* ── Dark surfaces (hero + footer) ─────────── */
+  --color-pine: #1A0806;
+  --color-pine-light: #2C1208;
+  --color-pine-card: #3C1A0C;
+  --color-void: #0E0402;
+
+  /* ── Light surfaces (body sections) ────────── */
+  --color-cream: #F7F3EC;
+  --color-cream-alt: #EDE9DF;
+  --color-cream-card: #FFFFFF;
+
+  /* ── Text ────────────────────────────────── */
+  --color-parchment: #F5EFE0;   /* on dark backgrounds */
+  --color-charcoal: #1C2419;    /* on light backgrounds */
+  --color-mist: #7A8870;        /* muted text (works on both) */
+
+  /* ── Borders ─────────────────────────────── */
+  --color-line: #2C1A10;        /* border on dark sections */
+  --color-border: #E0D9CC;      /* border on light sections */
+
+  /* ── Accents ─────────────────────────────── */
+  --color-saffron: #D4760F;
+  --color-saffron-dim: rgba(212,118,15,0.12);
+  --color-terracotta: #9C4A36;
+  --color-gold: #B8922A;
+  --color-gold-dim: rgba(184,146,42,0.12);
+  --color-moss: #3A5842;
+  --color-ice: #3A7874;
+}
+
+@theme inline {
+  --color-pine: var(--color-pine);
+  --color-pine-light: var(--color-pine-light);
+  --color-pine-card: var(--color-pine-card);
+  --color-void: var(--color-void);
+  --color-cream: var(--color-cream);
+  --color-cream-alt: var(--color-cream-alt);
+  --color-cream-card: var(--color-cream-card);
+  --color-parchment: var(--color-parchment);
+  --color-charcoal: var(--color-charcoal);
+  --color-mist: var(--color-mist);
+  --color-line: var(--color-line);
+  --color-border: var(--color-border);
+  --color-saffron: var(--color-saffron);
+  --color-terracotta: var(--color-terracotta);
+  --color-gold: var(--color-gold);
+  --color-moss: var(--color-moss);
+  --color-ice: var(--color-ice);
+
+  --font-display: "Fraunces", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-charcoal);
+}
+
+/* ── Reveal on scroll ──────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+.reveal-d3 { transition-delay: 0.3s; }
+.reveal-d4 { transition-delay: 0.4s; }
+.reveal-d5 { transition-delay: 0.5s; }
+
+/* ── Keyframes ─────────────────────────────────── */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hero-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212,118,15,0); }
+  50%       { box-shadow: 0 0 20px 4px rgba(212,118,15,0.25); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+@keyframes snow-fall {
+  0%   { transform: translateY(-20px) translateX(0px); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.7; }
+  100% { transform: translateY(110vh) translateX(28px); opacity: 0; }
+}
+
+/* Hero entrance animations */
+.hero-line-1 {
+  opacity: 0;
+  animation: hero-fade-up 0.9s ease forwards 0.2s;
+}
+.hero-line-2 {
+  opacity: 0;
+  animation: hero-fade-up 0.9s ease forwards 0.45s;
+}
+.hero-line-3 {
+  opacity: 0;
+  animation: hero-fade-up 0.9s ease forwards 0.65s;
+}
+.hero-cta {
+  opacity: 0;
+  animation: hero-fade-up 0.9s ease forwards 0.85s;
+}
+.hero-stats {
+  opacity: 0;
+  animation: hero-fade-in 1s ease forwards 1.1s;
+}
+
+/* Gradient text */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #D4760F 0%, #F0A030 50%, #C9A24B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Marquee */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 32s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* Card hover — light theme */
+.card-hover {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.card-hover:hover {
+  border-color: rgba(184,146,42,0.35);
+  box-shadow: 0 0 24px rgba(184,146,42,0.1), 0 8px 24px rgba(0,0,0,0.08);
+  transform: translateY(-3px);
+}
+
+/* FAQ accordion */
+.faq-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.faq-body.open {
+  max-height: 500px;
+}
+
+/* Scroll indicator bounce */
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(6px); }
+}
+.bounce-down {
+  animation: bounce-down 1.8s ease infinite;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}
+
+.text-balance { text-wrap: balance; }
+
+:focus-visible {
+  outline: 2px solid var(--color-saffron);
+  outline-offset: 3px;
+}
+
+.icon-float {
+  animation: float 3s ease-in-out infinite;
+}
