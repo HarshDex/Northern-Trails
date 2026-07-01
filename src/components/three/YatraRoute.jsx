@@ -119,7 +119,7 @@ const STOPS = [
     lx: 618, ly: 466, anchor: 'start',
   },
   {
-    label: 'Golu Devta Temple', sub: 'Champawat', t: 0.21,
+    label: 'Golu Devta Temple', sub: 'Ghorakhal · Almora', t: 0.21,
     cx: 554, cy: 422, type: 'temple',
     lx: 568, ly: 422, anchor: 'start',
   },
@@ -224,11 +224,14 @@ export default function YatraRouteMap() {
   const spurActive = progress >= 0.66;
 
   return (
-    <div ref={wrapperRef} style={{ height: '480vh' }} className="relative">
-      <div className="sticky top-0 h-screen overflow-hidden" style={{ background: '#F2EAD6' }}>
+    <div ref={wrapperRef} className="relative h-[300vh] md:h-[480vh]">
+      <div className="sticky top-0 h-screen overflow-hidden flex flex-col md:block" style={{ background: '#F2EAD6' }}>
+
+        {/* ── Map container ── */}
+        <div className="flex-1 overflow-hidden md:h-full">
         <svg
           viewBox="0 0 840 600"
-          className="w-full h-full"
+          className="w-[170%] -ml-[35%] mt-2 md:mt-0 md:w-full md:ml-0 md:h-full"
           preserveAspectRatio="xMidYMid meet"
           aria-label="Adi Kailash and Om Parvat Yatra route map"
         >
@@ -485,6 +488,26 @@ export default function YatraRouteMap() {
           <rect x="0" y="597" width={Math.round(840 * progress)} height="3" fill="#C86818"
                 style={{ transition: 'width 0.04s linear' }}/>
         </svg>
+        </div>
+
+        {/* ── Mobile bottom info panel ── */}
+        <div className="flex-shrink-0 md:hidden border-t border-border/40 bg-[#F2EAD6] px-5 py-4">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="font-mono text-[8px] uppercase tracking-[0.22em] text-saffron mb-0.5">Now Passing</p>
+              <p className="font-display text-lg font-semibold text-charcoal leading-tight">{STOPS[active].label}</p>
+              <p className="text-[11px] text-charcoal/45 font-mono">{STOPS[active].sub}</p>
+            </div>
+            <div className="text-right">
+              <p className="font-mono text-2xl font-bold text-saffron leading-none">{Math.round(progress * 100)}%</p>
+              <p className="text-[9px] text-charcoal/30 font-mono mt-0.5">of route</p>
+            </div>
+          </div>
+          <div className="h-1.5 bg-charcoal/[0.06] rounded-full overflow-hidden">
+            <div className="h-full bg-saffron rounded-full transition-[width] duration-100" style={{ width: `${progress * 100}%` }} />
+          </div>
+          <p className="mt-2.5 text-[10px] text-charcoal/30 font-mono text-center tracking-wider">SCROLL TO DRIVE THE ROUTE ↓</p>
+        </div>
       </div>
     </div>
   );

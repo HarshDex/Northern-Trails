@@ -7,6 +7,7 @@ import NativeDifference from '@/components/NativeDifference';
 import Testimonials from '@/components/Testimonials';
 import Gallery from '@/components/Gallery';
 import TrustSection from '@/components/TrustSection';
+import BlogSection from '@/components/BlogSection';
 import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import ScrollRevealInit from '@/components/ScrollRevealInit';
@@ -46,12 +47,13 @@ export default function Home() {
       <main>
         <Hero />
         <Marquee />
-        <YatraRoute />
         <Packages />
+        <YatraRoute />
         <NativeDifference />
         <Testimonials />
         <Gallery />
         <TrustSection />
+        <BlogSection />
         <FAQ />
       </main>
       <Footer />

@@ -8,6 +8,7 @@ const navLinks = [
   { href: '/#packages',   label: 'Yatra Packages' },
   { href: '/shop',        label: 'Shop' },
   { href: '/social-work', label: 'Social Work' },
+  { href: '/blog',        label: 'Blog' },
   { href: '/gallery',     label: 'Gallery' },
 ];
 
