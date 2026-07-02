@@ -1,9 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 
-// ── Custom mountain SVG paths (user-supplied, original viewBox 0 0 3003 3003)
-// Scaled/positioned with transform="translate(-21,-121) scale(0.221)" inside the 840×600 map SVG
-// → mountains occupy map x ≈ 40–600, y ≈ 63–300 (peaks at y≈63, baseline at y≈300)
 const MTN_A =
   'M 475.730469 1608.261719 C 475.730469 1608.261719 509.644531 1620.289062 577.421875 1602.238281 ' +
   'C 645.207031 1584.199219 683.105469 1466.621094 701.042969 1434.71875 ' +
@@ -106,65 +103,22 @@ const MTN_B =
   'C 1074.058594 1480.511719 1030.070312 1544.320312 1022.269531 1554.378906 ' +
   'C 998.851562 1581.429688 893.367188 1629.140625 832.660156 1673.949219 Z';
 
-// Full round-trip stops — car animates the OUTWARD journey
 const STOPS = [
-  {
-    label: 'Kathgodam', sub: 'Haldwani · Start', t: 0.00,
-    cx: 682, cy: 524, type: 'city',
-    lx: 696, ly: 524, anchor: 'start',
-  },
-  {
-    label: 'Kainchi Dham', sub: 'Neem Karoli Baba Ashram', t: 0.11,
-    cx: 604, cy: 466, type: 'temple',
-    lx: 618, ly: 466, anchor: 'start',
-  },
-  {
-    label: 'Golu Devta Temple', sub: 'Ghorakhal · Almora', t: 0.21,
-    cx: 554, cy: 422, type: 'temple',
-    lx: 568, ly: 422, anchor: 'start',
-  },
-  {
-    label: 'Pithoragarh', sub: '1,814 M · Hill Queen', t: 0.32,
-    cx: 500, cy: 376, type: 'city',
-    lx: 514, ly: 376, anchor: 'start',
-  },
-  {
-    label: 'Dharchula', sub: 'Nepal Border · 915 M', t: 0.47,
-    cx: 338, cy: 356, type: 'city',
-    lx: 324, ly: 356, anchor: 'end',
-  },
-  {
-    label: 'Tawaghat', sub: 'Dhauliganga Confluence', t: 0.57,
-    cx: 298, cy: 310, type: 'stop',
-    lx: 284, ly: 310, anchor: 'end',
-  },
-  {
-    label: 'Gunji · Nabi', sub: 'Base Camp · 3,350 M', t: 0.68,
-    cx: 256, cy: 240, type: 'camp',
-    lx: 242, ly: 240, anchor: 'end',
-  },
-  {
-    label: 'Adi Kailash', sub: '5,945 M · Chota Kailash', t: 1.00,
-    cx: 336, cy: 160, type: 'city',
-    lx: 355, ly: 116, anchor: 'start',
-  },
+  { label: 'Kathgodam',         sub: 'Haldwani · Start',          t: 0.00, cx: 682, cy: 524, type: 'city',   lx: 696, ly: 524, anchor: 'start' },
+  { label: 'Kainchi Dham',      sub: 'Neem Karoli Baba Ashram',   t: 0.11, cx: 604, cy: 466, type: 'temple', lx: 618, ly: 466, anchor: 'start' },
+  { label: 'Golu Devta Temple', sub: 'Ghorakhal · Almora',        t: 0.21, cx: 554, cy: 422, type: 'temple', lx: 568, ly: 422, anchor: 'start' },
+  { label: 'Pithoragarh',       sub: '1,814 M · Hill Queen',      t: 0.32, cx: 500, cy: 376, type: 'city',   lx: 514, ly: 376, anchor: 'start' },
+  { label: 'Dharchula',         sub: 'Nepal Border · 915 M',      t: 0.47, cx: 338, cy: 356, type: 'city',   lx: 324, ly: 356, anchor: 'end'   },
+  { label: 'Tawaghat',          sub: 'Dhauliganga Confluence',    t: 0.57, cx: 298, cy: 310, type: 'stop',   lx: 284, ly: 310, anchor: 'end'   },
+  { label: 'Gunji · Nabi',      sub: 'Base Camp · 3,350 M',       t: 0.68, cx: 256, cy: 240, type: 'camp',   lx: 242, ly: 240, anchor: 'end'   },
+  { label: 'Adi Kailash',       sub: '5,945 M · Chota Kailash',  t: 1.00, cx: 336, cy: 160, type: 'city',   lx: 355, ly: 116, anchor: 'start' },
 ];
 
-// Om Parvat spur (fades in at Gunji)
 const SPUR = [
-  {
-    label: 'Kalapani', sub: 'Kali Devi Mandir',
-    cx: 214, cy: 214, type: 'temple',
-    lx: 200, ly: 214, anchor: 'end',
-  },
-  {
-    label: 'Om Parvat', sub: '6,191 M',
-    cx: 184, cy: 183, type: 'city',
-    lx: 148, ly: 162, anchor: 'end',
-  },
+  { label: 'Kalapani',  sub: 'Kali Devi Mandir', cx: 214, cy: 214, type: 'temple', lx: 200, ly: 214, anchor: 'end' },
+  { label: 'Om Parvat', sub: '6,191 M',           cx: 184, cy: 183, type: 'city',   lx: 148, ly: 162, anchor: 'end' },
 ];
 
-// Main outward route
 const PATH_D =
   'M 682,524 C 650,504 622,482 604,466 ' +
   'C 582,452 566,436 554,422 ' +
@@ -174,7 +128,6 @@ const PATH_D =
   'C 280,280 268,260 256,240 ' +
   'C 278,202 308,180 336,160';
 
-// Spur from Gunji to Om Parvat via Kalapani
 const SPUR_D =
   'M 256,240 C 244,230 230,222 214,214 ' +
   'C 202,204 192,193 184,183';
@@ -225,289 +178,325 @@ export default function YatraRouteMap() {
 
   return (
     <div ref={wrapperRef} className="relative h-[300vh] md:h-[480vh]">
-      <div className="sticky top-0 h-screen overflow-hidden flex flex-col md:block" style={{ background: '#F2EAD6' }}>
+      <div className="sticky top-0 h-screen overflow-hidden" style={{ background: '#F2EAD6' }}>
 
-        {/* ── Map container ── */}
-        <div className="flex-1 overflow-hidden md:h-full">
-        <svg
-          viewBox="0 0 840 600"
-          className="w-[170%] -ml-[35%] mt-2 md:mt-0 md:w-full md:ml-0 md:h-full"
-          preserveAspectRatio="xMidYMid meet"
-          aria-label="Adi Kailash and Om Parvat Yatra route map"
-        >
-          <defs>
-            <filter id="ym-drop" x="-40%" y="-40%" width="180%" height="180%">
-              <feDropShadow dx="0" dy="1" stdDeviation="2.5" floodColor="#1A0C04" floodOpacity="0.18"/>
-            </filter>
-            {/* Gradient mask: mountain fades near title and below mid-map */}
-            <linearGradient id="mtn-fade" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor="white" stopOpacity="0"/>
-              <stop offset="12%"  stopColor="white" stopOpacity="1"/>
-              <stop offset="70%"  stopColor="white" stopOpacity="1"/>
-              <stop offset="100%" stopColor="white" stopOpacity="0"/>
-            </linearGradient>
-            <mask id="mtn-mask">
-              <rect width="840" height="600" fill="url(#mtn-fade)"/>
-            </mask>
-          </defs>
+        {/* ── MOBILE: vertical scroll timeline ── */}
+        <div className="md:hidden h-full flex flex-col">
 
-          {/* Background */}
-          <rect width="840" height="600" fill="#F2EAD6"/>
+          {/* Section title */}
+          <div className="flex-shrink-0 px-5 pt-[72px] pb-3 border-b border-charcoal/[0.07]">
+            <p className="font-mono text-[8px] uppercase tracking-[0.28em] text-saffron mb-0.5">Yatra Route</p>
+            <h2 className="font-display text-base font-semibold text-charcoal leading-tight">
+              Adi Kailash &amp; Om Parvat
+            </h2>
+          </div>
 
-          {/* ── Custom mountain illustration ── */}
-          {/* transform maps original viewBox (0–3003) peaks to map coords x≈40–600, y≈63–300 */}
-          <g
-            transform="translate(-21,-121) scale(0.221)"
-            opacity="0.42"
-            mask="url(#mtn-mask)"
+          {/* Stops timeline — flex-1 so it fills remaining height */}
+          <div className="flex-1 flex flex-col px-6 py-4 overflow-hidden">
+            {STOPS.flatMap((s, i) => {
+              const isAt   = i === active;
+              const isPast = i < active;
+              const lineProgress = i < STOPS.length - 1
+                ? Math.min(1, Math.max(0, (progress - STOPS[i].t) / (STOPS[i + 1].t - STOPS[i].t)))
+                : 0;
+
+              const items = [
+                /* Stop row */
+                <div key={`stop-${i}`} className="flex items-center gap-3 flex-shrink-0">
+                  {/* Icon: diamond for temple, circle for others */}
+                  {s.type === 'temple' ? (
+                    <div
+                      className="w-3 h-3 flex-shrink-0 rotate-45 border-2 transition-all duration-300"
+                      style={{
+                        background: isAt ? '#C86818' : isPast ? 'rgba(200,104,24,0.5)' : '#F2EAD6',
+                        borderColor: isAt || isPast ? '#9A4810' : 'rgba(26,12,4,0.2)',
+                        boxShadow: isAt ? '0 0 0 4px rgba(200,104,24,0.15)' : 'none',
+                      }}
+                    />
+                  ) : (
+                    <div
+                      className="w-3.5 h-3.5 flex-shrink-0 rounded-full border-2 transition-all duration-300"
+                      style={{
+                        background: isAt ? '#C86818' : isPast ? 'rgba(200,104,24,0.55)' : '#F2EAD6',
+                        borderColor: isAt || isPast ? '#9A4810' : 'rgba(26,12,4,0.2)',
+                        boxShadow: isAt ? '0 0 0 5px rgba(200,104,24,0.14)' : 'none',
+                      }}
+                    />
+                  )}
+
+                  {/* Label */}
+                  <div className={`transition-opacity duration-300 ${isPast || isAt ? 'opacity-100' : 'opacity-30'}`}>
+                    <p className={`font-display text-sm font-semibold leading-tight transition-colors duration-300 ${isAt ? 'text-charcoal' : 'text-charcoal/65'}`}>
+                      {s.label}
+                    </p>
+                    <p className="text-[9px] font-mono text-charcoal/35 leading-tight mt-px">{s.sub}</p>
+                    {/* Om Parvat spur badge — appears at Gunji when spur becomes active */}
+                    {i === 6 && spurActive && (
+                      <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 border"
+                           style={{ background: 'rgba(42,58,136,0.06)', borderColor: 'rgba(42,58,136,0.2)' }}>
+                        <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#2A3A88' }} />
+                        <p className="text-[8px] font-mono" style={{ color: '#2A3A88' }}>
+                          Spur → Kalapani · Om Parvat 6,191 M
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>,
+              ];
+
+              /* Connector line to next stop */
+              if (i < STOPS.length - 1) {
+                items.push(
+                  <div key={`line-${i}`} className="flex-1 ml-[6px] min-h-[14px]">
+                    <div className="w-px h-full relative" style={{ background: 'rgba(26,12,4,0.08)' }}>
+                      <div
+                        className="absolute top-0 left-0 w-full"
+                        style={{
+                          background: '#C86818',
+                          height: `${lineProgress * 100}%`,
+                          transition: 'height 0.04s linear',
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              }
+
+              return items;
+            })}
+          </div>
+
+          {/* Bottom progress panel */}
+          <div className="flex-shrink-0 border-t px-5 py-3" style={{ borderColor: 'rgba(26,12,4,0.08)', background: '#F2EAD6' }}>
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <p className="font-mono text-[8px] uppercase tracking-[0.22em] text-saffron mb-0.5">Now Passing</p>
+                <p className="font-display text-base font-semibold text-charcoal leading-tight">{STOPS[active].label}</p>
+                <p className="text-[10px] text-charcoal/40 font-mono">{STOPS[active].sub}</p>
+              </div>
+              <div className="text-right">
+                <p className="font-mono text-2xl font-bold text-saffron leading-none">{Math.round(progress * 100)}%</p>
+                <p className="text-[9px] text-charcoal/25 font-mono mt-0.5">of route</p>
+              </div>
+            </div>
+            <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(26,12,4,0.06)' }}>
+              <div
+                className="h-full bg-saffron rounded-full"
+                style={{ width: `${progress * 100}%`, transition: 'width 0.04s linear' }}
+              />
+            </div>
+            <p className="mt-2 text-[9px] text-charcoal/25 font-mono text-center tracking-widest">
+              SCROLL TO DRIVE THE ROUTE ↓
+            </p>
+          </div>
+        </div>
+
+        {/* ── DESKTOP: original SVG map ── */}
+        <div className="hidden md:block h-full">
+          <svg
+            viewBox="0 0 840 600"
+            className="w-full h-full"
+            preserveAspectRatio="xMidYMid meet"
+            aria-label="Adi Kailash and Om Parvat Yatra route map"
           >
-            <path d={MTN_A} fill="#2A180A" fillRule="nonzero"/>
-            <path d={MTN_B} fill="#2A180A" fillRule="nonzero"/>
-          </g>
+            <defs>
+              <filter id="ym-drop" x="-40%" y="-40%" width="180%" height="180%">
+                <feDropShadow dx="0" dy="1" stdDeviation="2.5" floodColor="#1A0C04" floodOpacity="0.18"/>
+              </filter>
+              <linearGradient id="mtn-fade" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stopColor="white" stopOpacity="0"/>
+                <stop offset="12%"  stopColor="white" stopOpacity="1"/>
+                <stop offset="70%"  stopColor="white" stopOpacity="1"/>
+                <stop offset="100%" stopColor="white" stopOpacity="0"/>
+              </linearGradient>
+              <mask id="mtn-mask">
+                <rect width="840" height="600" fill="url(#mtn-fade)"/>
+              </mask>
+            </defs>
 
-          {/* ── Title ── */}
-          <text x="420" y="26" textAnchor="middle" fontSize="16" fontWeight="700"
-                fontFamily="Georgia,'Times New Roman',serif"
-                fill="#1A0C04" letterSpacing="2.5">
-            ADI KAILASH &amp; OM PARVAT YATRA
-          </text>
-          <text x="420" y="42" textAnchor="middle" fontSize="8.5"
-                fontFamily="'Courier New',Courier,monospace"
-                fill="#7A5A38" letterSpacing="7">
-            UTTARAKHAND
-          </text>
-          <line x1="260" y1="50" x2="580" y2="50" stroke="#C86818" strokeWidth="0.8" opacity="0.55"/>
-          <circle cx="260" cy="50" r="2" fill="#C86818" opacity="0.55"/>
-          <circle cx="580" cy="50" r="2" fill="#C86818" opacity="0.55"/>
+            <rect width="840" height="600" fill="#F2EAD6"/>
 
-          {/* ── Kali River ── */}
-          <path
-            d="M 190,179 C 200,191 218,210 222,222 C 228,236 262,248 266,260 C 272,276 294,304 310,326 C 318,340 330,352 346,364"
-            fill="none" stroke="#7AB8D8" strokeWidth="5" strokeLinecap="round"
-            opacity="0.28"
-          />
-          <text x="290" y="268" fontSize="7" fontFamily="'Courier New',monospace"
-                fill="#4A86A0" opacity="0.65"
-                transform="rotate(-55,290,268)">
-            KALI RIVER
-          </text>
+            <g transform="translate(-21,-121) scale(0.221)" opacity="0.42" mask="url(#mtn-mask)">
+              <path d={MTN_A} fill="#2A180A" fillRule="nonzero"/>
+              <path d={MTN_B} fill="#2A180A" fillRule="nonzero"/>
+            </g>
 
-          {/* ── Parvati Sarovar ── */}
-          <ellipse cx="302" cy="198" rx="17" ry="10" fill="#7AB8D8" opacity="0.28"/>
-          <ellipse cx="302" cy="198" rx="17" ry="10" fill="none"
-                   stroke="#5A9CB8" strokeWidth="0.8" opacity="0.5"/>
-          <text x="321" y="193" fontSize="6.5" fontFamily="Georgia,serif"
-                fill="#3A6A88" opacity="0.85"
-                stroke="#F2EAD6" strokeWidth="2" paintOrder="stroke">Parvati</text>
-          <text x="321" y="203" fontSize="6.5" fontFamily="Georgia,serif"
-                fill="#3A6A88" opacity="0.85"
-                stroke="#F2EAD6" strokeWidth="2" paintOrder="stroke">Sarovar</text>
+            <text x="420" y="26" textAnchor="middle" fontSize="16" fontWeight="700"
+                  fontFamily="Georgia,'Times New Roman',serif"
+                  fill="#1A0C04" letterSpacing="2.5">
+              ADI KAILASH &amp; OM PARVAT YATRA
+            </text>
+            <text x="420" y="42" textAnchor="middle" fontSize="8.5"
+                  fontFamily="'Courier New',Courier,monospace"
+                  fill="#7A5A38" letterSpacing="7">
+              UTTARAKHAND
+            </text>
+            <line x1="260" y1="50" x2="580" y2="50" stroke="#C86818" strokeWidth="0.8" opacity="0.55"/>
+            <circle cx="260" cy="50" r="2" fill="#C86818" opacity="0.55"/>
+            <circle cx="580" cy="50" r="2" fill="#C86818" opacity="0.55"/>
 
-          {/* ── Om Parvat spur ── */}
-          <path d={SPUR_D} fill="none" stroke="#C0B8A4" strokeWidth="2"
-                strokeDasharray="5 4" strokeLinecap="round"
-                opacity={spurActive ? 0.12 : 0.28}
-                style={{ transition: 'opacity 0.5s' }}/>
-          <path d={SPUR_D} fill="none" stroke="#2A3A88" strokeWidth="2.5"
-                strokeDasharray="5 4" strokeLinecap="round"
-                opacity={spurActive ? 0.68 : 0}
-                style={{ transition: 'opacity 0.7s ease' }}/>
+            <path
+              d="M 190,179 C 200,191 218,210 222,222 C 228,236 262,248 266,260 C 272,276 294,304 310,326 C 318,340 330,352 346,364"
+              fill="none" stroke="#7AB8D8" strokeWidth="5" strokeLinecap="round" opacity="0.28"
+            />
+            <text x="290" y="268" fontSize="7" fontFamily="'Courier New',monospace"
+                  fill="#4A86A0" opacity="0.65" transform="rotate(-55,290,268)">
+              KALI RIVER
+            </text>
 
-          {/* ── Main route ghost (dashed grey) ── */}
-          <path d={PATH_D} fill="none" stroke="#C0B8A4" strokeWidth="2.5"
-                strokeDasharray="6 5" strokeLinecap="round"/>
+            <ellipse cx="302" cy="198" rx="17" ry="10" fill="#7AB8D8" opacity="0.28"/>
+            <ellipse cx="302" cy="198" rx="17" ry="10" fill="none" stroke="#5A9CB8" strokeWidth="0.8" opacity="0.5"/>
+            <text x="321" y="193" fontSize="6.5" fontFamily="Georgia,serif" fill="#3A6A88" opacity="0.85"
+                  stroke="#F2EAD6" strokeWidth="2" paintOrder="stroke">Parvati</text>
+            <text x="321" y="203" fontSize="6.5" fontFamily="Georgia,serif" fill="#3A6A88" opacity="0.85"
+                  stroke="#F2EAD6" strokeWidth="2" paintOrder="stroke">Sarovar</text>
 
-          {/* ── Main route revealed (saffron) ── */}
-          <path
-            ref={trailRef}
-            d={PATH_D} fill="none"
-            stroke="#C86818" strokeWidth="3.5"
-            strokeLinecap="round"
-            style={{ transition: 'stroke-dashoffset 0.04s linear' }}
-          />
+            <path d={SPUR_D} fill="none" stroke="#C0B8A4" strokeWidth="2"
+                  strokeDasharray="5 4" strokeLinecap="round"
+                  opacity={spurActive ? 0.12 : 0.28}
+                  style={{ transition: 'opacity 0.5s' }}/>
+            <path d={SPUR_D} fill="none" stroke="#2A3A88" strokeWidth="2.5"
+                  strokeDasharray="5 4" strokeLinecap="round"
+                  opacity={spurActive ? 0.68 : 0}
+                  style={{ transition: 'opacity 0.7s ease' }}/>
 
-          {/* ── Hidden measurement path ── */}
-          <path ref={pathRef} d={PATH_D} fill="none" stroke="transparent" strokeWidth="1"/>
+            <path d={PATH_D} fill="none" stroke="#C0B8A4" strokeWidth="2.5"
+                  strokeDasharray="6 5" strokeLinecap="round"/>
 
-          {/* ── Main stop markers + labels ── */}
-          {STOPS.map((s, i) => {
-            const isAt   = i === active;
-            const isPast = i < active;
-            const dotFill   = isAt ? '#C86818' : isPast ? '#8A4818' : '#F2EAD6';
-            const dotStroke = isAt || isPast ? '#7A3810' : '#A89878';
+            <path
+              ref={trailRef}
+              d={PATH_D} fill="none"
+              stroke="#C86818" strokeWidth="3.5"
+              strokeLinecap="round"
+              style={{ transition: 'stroke-dashoffset 0.04s linear' }}
+            />
 
-            return (
-              <g key={s.label}>
-                {isAt && <circle cx={s.cx} cy={s.cy} r="16" fill="#C86818" opacity="0.12"/>}
+            <path ref={pathRef} d={PATH_D} fill="none" stroke="transparent" strokeWidth="1"/>
 
-                {/* White backing for visibility on mountain terrain */}
-                {(i >= 6) && (
-                  <circle cx={s.cx} cy={s.cy} r="10" fill="white" opacity="0.70"/>
-                )}
+            {STOPS.map((s, i) => {
+              const isAt   = i === active;
+              const isPast = i < active;
+              const dotFill   = isAt ? '#C86818' : isPast ? '#8A4818' : '#F2EAD6';
+              const dotStroke = isAt || isPast ? '#7A3810' : '#A89878';
+              return (
+                <g key={s.label}>
+                  {isAt && <circle cx={s.cx} cy={s.cy} r="16" fill="#C86818" opacity="0.12"/>}
+                  {(i >= 6) && <circle cx={s.cx} cy={s.cy} r="10" fill="white" opacity="0.70"/>}
+                  {s.type === 'temple' ? (
+                    <g transform={`translate(${s.cx},${s.cy})`}>
+                      <rect transform="rotate(45)" x="-5.5" y="-5.5" width="11" height="11"
+                            fill={dotFill} stroke={dotStroke} strokeWidth="1.5"
+                            filter={isAt ? 'url(#ym-drop)' : undefined}/>
+                    </g>
+                  ) : (
+                    <circle cx={s.cx} cy={s.cy}
+                            r={s.type === 'camp' ? 8 : s.type === 'city' ? 7 : 5.5}
+                            fill={dotFill} stroke={dotStroke} strokeWidth="1.8"
+                            filter={isAt ? 'url(#ym-drop)' : undefined}/>
+                  )}
+                  {isPast && s.type !== 'temple' && <circle cx={s.cx} cy={s.cy} r="2.8" fill="#F2EAD6"/>}
+                  <text x={s.lx} y={s.ly}
+                        textAnchor={s.anchor} dominantBaseline="middle"
+                        fontSize={isAt ? '12' : '10.5'}
+                        fontFamily="Georgia,'Times New Roman',serif"
+                        fontWeight={isAt ? '700' : isPast ? '600' : '400'}
+                        fill={isAt ? '#3A1208' : isPast ? '#1E0C04' : '#5A4838'}
+                        stroke="#F2EAD6" strokeWidth="3.5" strokeLinejoin="round" paintOrder="stroke">
+                    {s.label}
+                  </text>
+                  {s.sub && (
+                    <text x={s.lx} y={s.ly + 15}
+                          textAnchor={s.anchor} dominantBaseline="middle"
+                          fontSize="7.5" fontFamily="'Courier New',Courier,monospace"
+                          fill={isAt ? '#9A4818' : '#7A6040'}
+                          stroke="#F2EAD6" strokeWidth="3" strokeLinejoin="round" paintOrder="stroke">
+                      {s.sub}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
 
+            {SPUR.map((s) => (
+              <g key={s.label}
+                 opacity={spurActive ? 1 : 0.08}
+                 style={{ transition: 'opacity 0.7s ease' }}>
+                <circle cx={s.cx} cy={s.cy} r="10" fill="white" opacity="0.70"/>
                 {s.type === 'temple' ? (
                   <g transform={`translate(${s.cx},${s.cy})`}>
                     <rect transform="rotate(45)" x="-5.5" y="-5.5" width="11" height="11"
-                          fill={dotFill} stroke={dotStroke} strokeWidth="1.5"
-                          filter={isAt ? 'url(#ym-drop)' : undefined}/>
+                          fill="#2A3A88" stroke="#1A2A68" strokeWidth="1.5"/>
                   </g>
                 ) : (
-                  <circle cx={s.cx} cy={s.cy}
-                          r={s.type === 'camp' ? 8 : s.type === 'city' ? 7 : 5.5}
-                          fill={dotFill} stroke={dotStroke} strokeWidth="1.8"
-                          filter={isAt ? 'url(#ym-drop)' : undefined}/>
+                  <circle cx={s.cx} cy={s.cy} r="7" fill="#2A3A88" stroke="#1A2A68" strokeWidth="1.8"/>
                 )}
-
-                {isPast && s.type !== 'temple' && (
-                  <circle cx={s.cx} cy={s.cy} r="2.8" fill="#F2EAD6"/>
-                )}
-
-                {/* Label with white halo for readability over mountain */}
-                <text
-                  x={s.lx} y={s.ly}
-                  textAnchor={s.anchor} dominantBaseline="middle"
-                  fontSize={isAt ? '12' : '10.5'}
-                  fontFamily="Georgia,'Times New Roman',serif"
-                  fontWeight={isAt ? '700' : isPast ? '600' : '400'}
-                  fill={isAt ? '#3A1208' : isPast ? '#1E0C04' : '#5A4838'}
-                  stroke="#F2EAD6" strokeWidth="3.5" strokeLinejoin="round"
-                  paintOrder="stroke"
-                >
+                <text x={s.lx} y={s.ly} textAnchor={s.anchor} dominantBaseline="middle"
+                      fontSize="10.5" fontFamily="Georgia,'Times New Roman',serif"
+                      fontWeight="600" fill="#1A2A58"
+                      stroke="#F2EAD6" strokeWidth="3.5" strokeLinejoin="round" paintOrder="stroke">
                   {s.label}
                 </text>
                 {s.sub && (
-                  <text
-                    x={s.lx} y={s.ly + 15}
-                    textAnchor={s.anchor} dominantBaseline="middle"
-                    fontSize="7.5"
-                    fontFamily="'Courier New',Courier,monospace"
-                    fill={isAt ? '#9A4818' : '#7A6040'}
-                    stroke="#F2EAD6" strokeWidth="3" strokeLinejoin="round"
-                    paintOrder="stroke"
-                  >
+                  <text x={s.lx} y={s.ly + 15} textAnchor={s.anchor} dominantBaseline="middle"
+                        fontSize="7.5" fontFamily="'Courier New',Courier,monospace" fill="#2A3A78"
+                        stroke="#F2EAD6" strokeWidth="3" strokeLinejoin="round" paintOrder="stroke">
                     {s.sub}
                   </text>
                 )}
               </g>
-            );
-          })}
+            ))}
 
-          {/* ── Spur stops (Kalapani & Om Parvat) ── */}
-          {SPUR.map((s) => (
-            <g key={s.label}
-               opacity={spurActive ? 1 : 0.08}
-               style={{ transition: 'opacity 0.7s ease' }}>
-              {/* White backing for mountain stops */}
-              <circle cx={s.cx} cy={s.cy} r="10" fill="white" opacity="0.70"/>
-
-              {s.type === 'temple' ? (
-                <g transform={`translate(${s.cx},${s.cy})`}>
-                  <rect transform="rotate(45)" x="-5.5" y="-5.5" width="11" height="11"
-                        fill="#2A3A88" stroke="#1A2A68" strokeWidth="1.5"/>
-                </g>
-              ) : (
-                <circle cx={s.cx} cy={s.cy} r="7"
-                        fill="#2A3A88" stroke="#1A2A68" strokeWidth="1.8"/>
-              )}
-
-              <text x={s.lx} y={s.ly}
-                    textAnchor={s.anchor} dominantBaseline="middle"
-                    fontSize="10.5" fontFamily="Georgia,'Times New Roman',serif"
-                    fontWeight="600" fill="#1A2A58"
-                    stroke="#F2EAD6" strokeWidth="3.5" strokeLinejoin="round"
-                    paintOrder="stroke">
-                {s.label}
-              </text>
-              {s.sub && (
-                <text x={s.lx} y={s.ly + 15}
-                      textAnchor={s.anchor} dominantBaseline="middle"
-                      fontSize="7.5" fontFamily="'Courier New',Courier,monospace"
-                      fill="#2A3A78"
-                      stroke="#F2EAD6" strokeWidth="3" strokeLinejoin="round"
-                      paintOrder="stroke">
-                  {s.sub}
-                </text>
-              )}
+            <g ref={carRef} transform="translate(682,524)">
+              <ellipse cx="1" cy="2" rx="14" ry="9" fill="#000" opacity="0.15"/>
+              <rect x="-13" y="-7.5" width="26" height="15" rx="5" fill="#C86818" filter="url(#ym-drop)"/>
+              <rect x="-6.5" y="-6" width="16" height="12" rx="2.5" fill="#9A4A10"/>
+              <path d="M 7,-7 L 13,-4.5 L 13,4.5 L 7,7 Z" fill="#080402" opacity="0.28"/>
+              <path d="M 8,-6.5 L 12,-4 L 12,4 L 8,6.5 Z" fill="#9DD4F4" opacity="0.65"/>
+              <rect x="-17" y="-9.5" width="5.5" height="4"  rx="1.8" fill="#080402"/>
+              <rect x="-17" y="  5.5" width="5.5" height="4" rx="1.8" fill="#080402"/>
+              <rect x=" 11" y="-9.5" width="5.5" height="4"  rx="1.8" fill="#080402"/>
+              <rect x=" 11" y="  5.5" width="5.5" height="4" rx="1.8" fill="#080402"/>
+              <circle cx="14" cy="-3.5" r="2.2" fill="#FFFFA0" opacity="0.9"/>
+              <circle cx="14" cy=" 3.5" r="2.2" fill="#FFFFA0" opacity="0.9"/>
             </g>
-          ))}
 
-          {/* ── Car (top-down jeep) ── */}
-          <g ref={carRef} transform="translate(682,524)">
-            <ellipse cx="1" cy="2" rx="14" ry="9" fill="#000" opacity="0.15"/>
-            <rect x="-13" y="-7.5" width="26" height="15" rx="5" fill="#C86818"
-                  filter="url(#ym-drop)"/>
-            <rect x="-6.5" y="-6" width="16" height="12" rx="2.5" fill="#9A4A10"/>
-            <path d="M 7,-7 L 13,-4.5 L 13,4.5 L 7,7 Z" fill="#080402" opacity="0.28"/>
-            <path d="M 8,-6.5 L 12,-4 L 12,4 L 8,6.5 Z" fill="#9DD4F4" opacity="0.65"/>
-            <rect x="-17" y="-9.5" width="5.5" height="4"   rx="1.8" fill="#080402"/>
-            <rect x="-17" y="  5.5" width="5.5" height="4"  rx="1.8" fill="#080402"/>
-            <rect x=" 11" y="-9.5" width="5.5" height="4"   rx="1.8" fill="#080402"/>
-            <rect x=" 11" y="  5.5" width="5.5" height="4"  rx="1.8" fill="#080402"/>
-            <circle cx="14" cy="-3.5" r="2.2" fill="#FFFFA0" opacity="0.9"/>
-            <circle cx="14" cy=" 3.5" r="2.2" fill="#FFFFA0" opacity="0.9"/>
-          </g>
+            <g transform="translate(54,548)">
+              <circle r="19" fill="#F2EAD6" stroke="#A09070" strokeWidth="1"/>
+              <path d="M 0,-16 L 3.5,-4 L 0,-7 L -3.5,-4 Z" fill="#C86818"/>
+              <path d="M 0,16  L 3.5,4  L 0,7  L -3.5,4  Z" fill="#A09070"/>
+              <path d="M -16,0 L -4,-3.5 L -7,0 L -4,3.5 Z" fill="#A09070"/>
+              <path d="M  16,0 L  4,-3.5 L  7,0 L  4,3.5 Z" fill="#A09070"/>
+              <text y="-21" textAnchor="middle" fontSize="7.5"
+                    fontFamily="'Courier New',monospace" fill="#5A4830" fontWeight="700">N</text>
+            </g>
+            <text x="54" y="578" textAnchor="middle" fontSize="6.5"
+                  fontFamily="'Courier New',monospace" fill="#9A8060">
+              Return via same route
+            </text>
 
-          {/* ── Compass rose ── */}
-          <g transform="translate(54,548)">
-            <circle r="19" fill="#F2EAD6" stroke="#A09070" strokeWidth="1"/>
-            <path d="M 0,-16 L 3.5,-4 L 0,-7 L -3.5,-4 Z" fill="#C86818"/>
-            <path d="M 0,16  L 3.5,4  L 0,7  L -3.5,4  Z" fill="#A09070"/>
-            <path d="M -16,0 L -4,-3.5 L -7,0 L -4,3.5 Z" fill="#A09070"/>
-            <path d="M  16,0 L  4,-3.5 L  7,0 L  4,3.5 Z" fill="#A09070"/>
-            <text y="-21" textAnchor="middle" fontSize="7.5"
-                  fontFamily="'Courier New',monospace" fill="#5A4830" fontWeight="700">N</text>
-          </g>
-          <text x="54" y="578" textAnchor="middle" fontSize="6.5"
-                fontFamily="'Courier New',monospace" fill="#9A8060">
-            Return via same route
-          </text>
+            <text x="420" y="587" textAnchor="middle" fontSize="8"
+                  fontFamily="'Courier New',Courier,monospace"
+                  fill="#9A8060" letterSpacing="4">
+              SCROLL TO DRIVE THE ROUTE ↓
+            </text>
 
-          {/* ── Scroll hint ── */}
-          <text x="420" y="587" textAnchor="middle" fontSize="8"
-                fontFamily="'Courier New',Courier,monospace"
-                fill="#9A8060" letterSpacing="4">
-            SCROLL TO DRIVE THE ROUTE ↓
-          </text>
+            <rect x="618" y="556" width="200" height="36" rx="5" fill="#1A0C04" opacity="0.055"/>
+            <text x="630" y="570" fontSize="11"
+                  fontFamily="Georgia,'Times New Roman',serif"
+                  fontWeight="700" fill="#2A1004">
+              {STOPS[active].label}
+            </text>
+            <text x="630" y="585" fontSize="7.5"
+                  fontFamily="'Courier New',Courier,monospace" fill="#7A5030">
+              {STOPS[active].sub || 'En route'}
+            </text>
 
-          {/* ── Active stop info ── */}
-          <rect x="618" y="556" width="200" height="36" rx="5"
-                fill="#1A0C04" opacity="0.055"/>
-          <text x="630" y="570" fontSize="11"
-                fontFamily="Georgia,'Times New Roman',serif"
-                fontWeight="700" fill="#2A1004">
-            {STOPS[active].label}
-          </text>
-          <text x="630" y="585" fontSize="7.5"
-                fontFamily="'Courier New',Courier,monospace"
-                fill="#7A5030">
-            {STOPS[active].sub || 'En route'}
-          </text>
-
-          {/* ── Progress bar ── */}
-          <rect x="0" y="597" width="840" height="3" fill="#D8CEB4"/>
-          <rect x="0" y="597" width={Math.round(840 * progress)} height="3" fill="#C86818"
-                style={{ transition: 'width 0.04s linear' }}/>
-        </svg>
+            <rect x="0" y="597" width="840" height="3" fill="#D8CEB4"/>
+            <rect x="0" y="597" width={Math.round(840 * progress)} height="3" fill="#C86818"
+                  style={{ transition: 'width 0.04s linear' }}/>
+          </svg>
         </div>
 
-        {/* ── Mobile bottom info panel ── */}
-        <div className="flex-shrink-0 md:hidden border-t border-border/40 bg-[#F2EAD6] px-5 py-4">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <p className="font-mono text-[8px] uppercase tracking-[0.22em] text-saffron mb-0.5">Now Passing</p>
-              <p className="font-display text-lg font-semibold text-charcoal leading-tight">{STOPS[active].label}</p>
-              <p className="text-[11px] text-charcoal/45 font-mono">{STOPS[active].sub}</p>
-            </div>
-            <div className="text-right">
-              <p className="font-mono text-2xl font-bold text-saffron leading-none">{Math.round(progress * 100)}%</p>
-              <p className="text-[9px] text-charcoal/30 font-mono mt-0.5">of route</p>
-            </div>
-          </div>
-          <div className="h-1.5 bg-charcoal/[0.06] rounded-full overflow-hidden">
-            <div className="h-full bg-saffron rounded-full transition-[width] duration-100" style={{ width: `${progress * 100}%` }} />
-          </div>
-          <p className="mt-2.5 text-[10px] text-charcoal/30 font-mono text-center tracking-wider">SCROLL TO DRIVE THE ROUTE ↓</p>
-        </div>
       </div>
     </div>
   );
