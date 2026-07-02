@@ -6,7 +6,7 @@ import Packages from '@/components/Packages';
 import NativeDifference from '@/components/NativeDifference';
 import Testimonials from '@/components/Testimonials';
 import Gallery from '@/components/Gallery';
-import TrustSection from '@/components/TrustSection';
+import SacredPeak from '@/components/SacredPeak';
 import BlogSection from '@/components/BlogSection';
 import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
@@ -52,7 +52,7 @@ export default function Home() {
         <NativeDifference />
         <Testimonials />
         <Gallery />
-        <TrustSection />
+        <SacredPeak />
         <BlogSection />
         <FAQ />
       </main>
